@@ -15,7 +15,57 @@
 			"address": "facebook.com",
 			"result": 200,
 			"Threshold": 5
-		}
+		},
+		{
+			"address": "bing.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "reddit.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "https://stackoverflow.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "gmail.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "miro.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "https://outlook.live.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "https://amazon.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "https://slack.com",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "https://www.spotify.com/",
+			"result": 200,
+			"Threshold": 5
+		},
+		{
+			"address": "www.goat.com",
+			"result": 200,
+			"Threshold": 5
+		}									
 	],
-	"Intreval": 25
+	"Intreval": 20
 }

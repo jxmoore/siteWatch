@@ -13,9 +13,10 @@ import (
 
 // StartPoll is responsible for running the Poll func on a loop.
 func StartPoll(siteList *models.SiteBlock, HTTPS bool) {
-	//cleanAddress(siteList, HTTPS)
+	cleanAddress(siteList, HTTPS)
 	for {
-		//poll(siteList)
+		// fmt.Println("Calling poll...")
+		poll(siteList)
 		time.Sleep(time.Duration(siteList.Intreval) * time.Second)
 	}
 }
@@ -61,14 +62,17 @@ func siteCheck(siteList *models.SiteBlock, index int, wg *sync.WaitGroup) {
 	if err != nil {
 		site.Count++
 		site.Status = false
-	}
-	if testSite.StatusCode != site.Result {
+	} else if testSite.StatusCode != site.Result {
 		site.Count++
 		site.Status = false
 		fmt.Printf("Error test %v : %v != %v \n", site.Address, testSite.StatusCode, site.Result)
 	} else {
-		fmt.Printf("Test %s : %d \n", site.Address, testSite.StatusCode)
+		// fmt.Printf("Test %s : %d \n", site.Address, testSite.StatusCode)
+		if !site.Status {
+			site.Status = true
+		}
 	}
+
 	if site.Count >= site.Threshold && site.Threshold != 0 {
 		notify(site.Address, site.Count)
 		site.Count = 0
