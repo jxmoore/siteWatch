@@ -1,0 +1,19 @@
+{
+	"sites": [{
+			"address": "y",
+			"result": 200
+		},
+		{
+			"address": "a",
+			"result": 200
+		},
+		{
+			"address": "s",
+			"result": 200
+		},
+		{
+			"address": "Asf",
+			"result": 200
+		}
+	]
+}
