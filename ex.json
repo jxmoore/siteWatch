@@ -1,0 +1,19 @@
+{
+	"sites": [{
+			"address": "yahoo.com",
+			"result": 200
+		},
+		{
+			"address": "google.com",
+			"result": 500
+		},
+		{
+			"address": "http://github.com",
+			"result": 200
+		},
+		{
+			"address": "facebook.com",
+			"result": 200
+		}
+	]
+}

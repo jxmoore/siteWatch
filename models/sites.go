@@ -1,3 +1,4 @@
+// Package models is responsible for the creation and structure of the siteblock type.
 package models
 
 import (
@@ -8,17 +9,21 @@ import (
 	"os"
 )
 
+// Site is a struct representing the expected nested json objects with the addition of a count and status
+// these hold the number of failures and current up/down status.
 type Site struct {
 	Address string
 	Result  int
 	Status  bool
+	Count   int
 }
 
+//SiteBlock is the top level JSON object which contains an array of sites.
 type SiteBlock struct {
 	Sites []Site
 }
 
-// NewSiteStruct reads the file contents and creates a slice of sites.
+// NewSiteStruct reads the file contents and returns a pointer to a SiteBlock.
 func NewSiteStruct(filePath string) (*SiteBlock, error) {
 	fileEx, err := os.Stat(filePath)
 	if os.IsNotExist(err) || fileEx.IsDir() == true {
@@ -36,7 +41,5 @@ func NewSiteStruct(filePath string) (*SiteBlock, error) {
 		fmt.Println(err)
 		return &SiteBlock{}, errors.New("Error reading json")
 	}
-	fmt.Println(watchList.Sites)
-
 	return &watchList, nil
 }
