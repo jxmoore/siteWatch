@@ -4,7 +4,6 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -40,7 +39,7 @@ func NewSiteStruct(filePath string) (*SiteBlock, error) {
 	watchList := SiteBlock{}
 	err = json.Unmarshal(contents, &watchList)
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		return &SiteBlock{}, errors.New("Error reading json")
 	}
 

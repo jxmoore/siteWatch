@@ -12,13 +12,13 @@ import (
 
 // Poll loops throught the SiteBlock slice and polls each endpoint to determine its up down status.
 func poll(siteList *models.SiteBlock) {
-	for _, site := range siteList.Sites {
+	for x, site := range siteList.Sites {
+
 		testSite, err := http.Get(site.Address)
 		if err != nil {
 			site.Count++
 			site.Status = false
 		}
-		fmt.Println(site.Address)
 		if testSite.StatusCode != site.Result {
 			site.Count++
 			site.Status = false
@@ -26,12 +26,12 @@ func poll(siteList *models.SiteBlock) {
 		} else {
 			fmt.Printf("Test %s : %d \n", site.Address, testSite.StatusCode)
 		}
-
-		// currently just stdout, add slack.
 		if site.Count >= site.Threshold && site.Threshold != 0 {
 			notify(site.Address, site.Count)
 			site.Count = 0
 		}
+
+		siteList.Sites[x] = site
 
 	}
 }
@@ -55,14 +55,17 @@ func cleanAddress(siteList *models.SiteBlock, HTTPS bool) {
 	for x, site := range siteList.Sites {
 		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
 			if HTTPS {
-				siteList.Sites[x].Address = "https://" + site.Address
+				site.Address = "https://" + site.Address
 			} else {
-				siteList.Sites[x].Address = "http://" + site.Address
+				site.Address = "http://" + site.Address
 			}
 		} else if HTTPS { // Accounting for hardcoded HTTP in JSON but -t at runtime.
 			if !strings.Contains(strings.ToLower(site.Address), "https://") {
-				siteList.Sites[x].Address = strings.Replace(site.Address, "http://", "https://", -1)
+				site.Address = strings.Replace(site.Address, "http://", "https://", -1)
 			}
 		}
+
+		siteList.Sites[x] = site
+
 	}
 }

@@ -19,5 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go controllers.StartPoll(watchList, *HTTPS)
+	controllers.StartPoll(watchList, *HTTPS)
+	// controllers.CleanAddress(watchList, *HTTPS)
+	// controllers.Poll(watchList)
 }
