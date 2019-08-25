@@ -13,7 +13,8 @@
 		},
 		{
 			"address": "facebook.com",
-			"result": 200
+			"result": 200,
+			"Threshold": 5
 		}
 	]
 }

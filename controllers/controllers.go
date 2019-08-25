@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/jxmoore/siteWatch/models"
 )
@@ -38,5 +39,25 @@ func Poll(siteList *models.SiteBlock, HTTPS bool) {
 		} else {
 			fmt.Printf("Test %s : %d \n", site.Address, testSite.StatusCode)
 		}
+
+		// currently just stdout, add slack.
+		if site.Count >= site.Threshold {
+			notify(site.Address, site.Count)
+			site.Count = 0
+		}
+
+	}
+}
+
+// notify is responsible for notifying when failures exceed the threshold.
+func notify(siteName string, count int) {
+	fmt.Printf("The test for %s has failed %d times which exceeds the current threshold value.", siteName, count)
+}
+
+// StartPoll is responsible for running the Poll func on a loop.
+func StartPoll(siteList *models.SiteBlock, HTTPS bool) {
+	for {
+		Poll(siteList, HTTPS)
+		time.Sleep(time.Duration(siteList.Intreval) * time.Second)
 	}
 }

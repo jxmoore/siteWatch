@@ -9,18 +9,20 @@ import (
 	"os"
 )
 
-// Site is a struct representing the expected nested json objects with the addition of a count and status
-// these hold the number of failures and current up/down status.
+// Site is a struct representing the expected nested json objects with the addition of a count, threshold and status
+// these hold the number of failures, the threshold for failures and current up/down status.
 type Site struct {
-	Address string
-	Result  int
-	Status  bool
-	Count   int
+	Address   string
+	Result    int
+	Status    bool
+	Count     int
+	Threshold int
 }
 
-//SiteBlock is the top level JSON object which contains an array of sites.
+//SiteBlock is a type containing the top level JSON object which contains an array of sites and the intreval to loop in seconds.
 type SiteBlock struct {
-	Sites []Site
+	Sites    []Site
+	Intreval int
 }
 
 // NewSiteStruct reads the file contents and returns a pointer to a SiteBlock.
