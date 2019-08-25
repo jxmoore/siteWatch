@@ -65,7 +65,7 @@ func siteCheck(siteList *models.SiteBlock, index int, wg *sync.WaitGroup) {
 	} else if testSite.StatusCode != site.Result {
 		site.Count++
 		site.Status = false
-		fmt.Printf("Error test %v : %v != %v \n", site.Address, testSite.StatusCode, site.Result)
+		// fmt.Printf("Error test %v : %v != %v \n", site.Address, testSite.StatusCode, site.Result)
 	} else {
 		// fmt.Printf("Test %s : %d \n", site.Address, testSite.StatusCode)
 		if !site.Status {
@@ -74,7 +74,7 @@ func siteCheck(siteList *models.SiteBlock, index int, wg *sync.WaitGroup) {
 	}
 
 	if site.Count >= site.Threshold && site.Threshold != 0 {
-		notify(site.Address, site.Count)
+		notify(site.Address, site.Count, &siteList.Notification)
 		site.Count = 0
 	}
 
@@ -82,6 +82,9 @@ func siteCheck(siteList *models.SiteBlock, index int, wg *sync.WaitGroup) {
 }
 
 // notify is responsible for notifying when failures exceed the threshold.
-func notify(siteName string, count int) {
-	fmt.Printf("The test for %s has failed %d times which exceeds the current threshold value.\n", siteName, count)
+func notify(siteName string, count int, notifier *models.Notification) {
+	notifier.Kind = strings.ToLower(notifier.Kind)
+	if notifier.Kind == "" || strings.Contains(notifier.Kind, "stdout") {
+		fmt.Printf("The test for %s has failed %d times which exceeds the current threshold value.\n", siteName, count)
+	}
 }

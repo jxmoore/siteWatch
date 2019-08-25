@@ -67,5 +67,8 @@
 			"Threshold": 5
 		}									
 	],
-	"Intreval": 20
+	"Intreval": 20,
+	"notification":{
+		"kind": "stdout"
+	}
 }
