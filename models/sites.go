@@ -43,5 +43,11 @@ func NewSiteStruct(filePath string) (*SiteBlock, error) {
 		fmt.Println(err)
 		return &SiteBlock{}, errors.New("Error reading json")
 	}
+
+	// If the intreval is not the null value and is less than 5 seconds.
+	if watchList.Intreval < 5 && watchList.Intreval != 0 {
+		watchList.Intreval = 5
+	}
+
 	return &watchList, nil
 }

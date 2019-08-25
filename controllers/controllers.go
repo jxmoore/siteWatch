@@ -11,27 +11,14 @@ import (
 )
 
 // Poll loops throught the SiteBlock slice and polls each endpoint to determine its up down status.
-func Poll(siteList *models.SiteBlock, HTTPS bool) {
+func poll(siteList *models.SiteBlock) {
 	for _, site := range siteList.Sites {
-
-		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
-			if HTTPS {
-				site.Address = "https://" + site.Address
-			} else {
-				site.Address = "http://" + site.Address
-			}
-		} else if HTTPS { // Accounting for hardcoded HTTP in JSON but -t at runtime.
-			if !strings.Contains(strings.ToLower(site.Address), "https://") {
-				site.Address = strings.Replace(site.Address, "http://", "https://", -1)
-			}
-		}
-
 		testSite, err := http.Get(site.Address)
 		if err != nil {
 			site.Count++
 			site.Status = false
 		}
-
+		fmt.Println(site.Address)
 		if testSite.StatusCode != site.Result {
 			site.Count++
 			site.Status = false
@@ -41,7 +28,7 @@ func Poll(siteList *models.SiteBlock, HTTPS bool) {
 		}
 
 		// currently just stdout, add slack.
-		if site.Count >= site.Threshold {
+		if site.Count >= site.Threshold && site.Threshold != 0 {
 			notify(site.Address, site.Count)
 			site.Count = 0
 		}
@@ -51,13 +38,31 @@ func Poll(siteList *models.SiteBlock, HTTPS bool) {
 
 // notify is responsible for notifying when failures exceed the threshold.
 func notify(siteName string, count int) {
-	fmt.Printf("The test for %s has failed %d times which exceeds the current threshold value.", siteName, count)
+	fmt.Printf("The test for %s has failed %d times which exceeds the current threshold value.\n", siteName, count)
 }
 
 // StartPoll is responsible for running the Poll func on a loop.
 func StartPoll(siteList *models.SiteBlock, HTTPS bool) {
+	cleanAddress(siteList, HTTPS)
 	for {
-		Poll(siteList, HTTPS)
+		//poll(siteList)
 		time.Sleep(time.Duration(siteList.Intreval) * time.Second)
+	}
+}
+
+// cleanAddress is responsible for appending HTTP:// onto the site address, or converting them from HTTP:// to HTTPS://
+func cleanAddress(siteList *models.SiteBlock, HTTPS bool) {
+	for x, site := range siteList.Sites {
+		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
+			if HTTPS {
+				siteList.Sites[x].Address = "https://" + site.Address
+			} else {
+				siteList.Sites[x].Address = "http://" + site.Address
+			}
+		} else if HTTPS { // Accounting for hardcoded HTTP in JSON but -t at runtime.
+			if !strings.Contains(strings.ToLower(site.Address), "https://") {
+				siteList.Sites[x].Address = strings.Replace(site.Address, "http://", "https://", -1)
+			}
+		}
 	}
 }

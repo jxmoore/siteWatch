@@ -16,5 +16,6 @@
 			"result": 200,
 			"Threshold": 5
 		}
-	]
+	],
+	"Intreval": 25
 }
