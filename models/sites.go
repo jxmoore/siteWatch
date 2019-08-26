@@ -32,6 +32,8 @@ type SiteBlock struct {
 	Notification Notification
 	Intreval     int
 	LastChecked  string
+	HTTP         bool
+	Port         int
 }
 
 // LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.

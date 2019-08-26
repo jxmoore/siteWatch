@@ -3,7 +3,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -16,8 +15,8 @@ var timeFormat = "Jan 2, 2006 3:04pm (MST)"
 // StartPoll is responsible for running the Poll func on a loop.
 func StartPoll(siteList *models.SiteBlock) {
 
-	if strings.ToLower(siteList.Notification.Kind) == "http" {
-		// go runWebHealth(stuff)
+	if siteList.HTTP {
+		go ServerSiteStats(siteList)
 	}
 
 	for {

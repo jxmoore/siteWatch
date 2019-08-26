@@ -70,5 +70,7 @@
 	"Intreval": 3,
 	"notification":{
 		"kind": "stdout"
-	}
+	},
+	"HTTP": true,
+	"Port": 9090
 }
