@@ -10,16 +10,14 @@ import (
 
 func main() {
 
-	var file = flag.String("f", ".\\sites.json", "A relative path to the JSON file containing the sites to monitor.")
+	var file = flag.String("f", ".\\sites.json", "A relative path to the JSON configuration file containing the sites to monitor and other settings.")
 	var HTTPS = flag.Bool("t", false, "Get requests are attempted over HTTPS rather than HTTP")
 
 	flag.Parse()
-	watchList, err := models.NewSiteStruct(*file, *HTTPS)
+	watchList, err := models.LoadSiteConfig(*file, *HTTPS)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	controllers.StartPoll(watchList)
-	// controllers.CleanAddress(watchList, *HTTPS)
-	// controllers.Poll(watchList)
 }

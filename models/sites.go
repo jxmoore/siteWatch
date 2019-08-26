@@ -34,8 +34,8 @@ type SiteBlock struct {
 	LastChecked  string
 }
 
-// NewSiteStruct reads the file contents and returns a pointer to a SiteBlock.
-func NewSiteStruct(filePath string, HTTPS bool) (*SiteBlock, error) {
+// LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.
+func LoadSiteConfig(filePath string, HTTPS bool) (*SiteBlock, error) {
 	fileEx, err := os.Stat(filePath)
 	if os.IsNotExist(err) || fileEx.IsDir() == true {
 		return &SiteBlock{}, errors.New("The referenced file cannot be read in its current state")
