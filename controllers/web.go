@@ -21,7 +21,14 @@ func ServerSiteStats(siteListRef *models.SiteBlock) {
 }
 
 func (serveringList *httpSiteList) statHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Last checked at : %v\n", serveringList.siteBlock.LastChecked)
 	for _, site := range serveringList.siteBlock.Sites {
-		fmt.Fprintf(w, "Site : ", site.Address)
+		var siteUp string
+		if site.Status {
+			siteUp = "Site up"
+		} else {
+			siteUp = "Currently down"
+		}
+		fmt.Fprintf(w, "Site : %v \n Status : %v \n Expected responseCode : %v \n FailureCount : %v\n\n", site.Address, siteUp, site.Result, site.Count)
 	}
 }

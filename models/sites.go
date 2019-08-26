@@ -12,11 +12,12 @@ import (
 // site is a struct representing the expected nested json objects with the addition of a count, threshold and status
 // these hold the number of failures, the threshold for failures and current up/down status.
 type site struct {
-	Address   string
-	Result    int
-	Status    bool
-	Count     int
-	Threshold int
+	Address        string
+	Result         int
+	Status         bool
+	Count          int
+	Threshold      int
+	LastResultCode int
 }
 
 // Notification is the struct that represents the notification json body
