@@ -14,12 +14,12 @@ func main() {
 	var HTTPS = flag.Bool("t", false, "Get requests are attempted over HTTPS rather than HTTP")
 
 	flag.Parse()
-	watchList, err := models.NewSiteStruct(*file)
+	watchList, err := models.NewSiteStruct(*file, *HTTPS)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	controllers.StartPoll(watchList, *HTTPS)
+	controllers.StartPoll(watchList)
 	// controllers.CleanAddress(watchList, *HTTPS)
 	// controllers.Poll(watchList)
 }
