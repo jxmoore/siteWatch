@@ -46,12 +46,15 @@ func siteCheck(siteList *models.SiteBlock, index int, wg *sync.WaitGroup) {
 	if err != nil {
 		site.Count++
 		site.Status = false
+		site.LastResultCode = 0
 	} else if testSite.StatusCode != site.Result {
 		site.Count++
 		site.Status = false
+		site.LastResultCode = testSite.StatusCode
 	} else {
 		if !site.Status {
 			site.Status = true
+			site.LastResultCode = testSite.StatusCode
 		}
 	}
 

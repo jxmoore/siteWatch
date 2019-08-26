@@ -34,7 +34,7 @@ type SiteBlock struct {
 	Intreval     int
 	LastChecked  string
 	HTTP         bool
-	Port         int
+	Port         string
 }
 
 // LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.

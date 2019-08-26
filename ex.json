@@ -72,5 +72,5 @@
 		"kind": "stdout"
 	},
 	"HTTP": true,
-	"Port": 9090
+	"Port": ":9090"
 }
