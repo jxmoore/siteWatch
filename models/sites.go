@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
+	"time"
 )
 
 // site is a struct representing the expected nested json objects with the addition of a count, threshold and status
@@ -37,38 +39,8 @@ type SiteBlock struct {
 	Port         string
 }
 
-// LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.
-func LoadSiteConfig(filePath string, HTTPS bool) (*SiteBlock, error) {
-	fileEx, err := os.Stat(filePath)
-	if os.IsNotExist(err) || fileEx.IsDir() == true {
-		return &SiteBlock{}, errors.New("The referenced file cannot be read in its current state")
-	}
-
-	contents, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return &SiteBlock{}, errors.New("Error reading file")
-	}
-
-	watchList := SiteBlock{}
-	err = json.Unmarshal(contents, &watchList)
-	if err != nil {
-		// fmt.Println(err)
-		return &SiteBlock{}, errors.New("Error reading json")
-	}
-
-	// If the intreval is not the null value and is less than 5 seconds.
-	if watchList.Intreval < 5 && watchList.Intreval != 0 {
-		watchList.Intreval = 5
-	}
-
-	cleanAddress(&watchList, HTTPS)
-
-	return &watchList, nil
-}
-
-// cleanAddress is responsible for appending HTTP:// onto the site address, or converting them from HTTP:// to HTTPS://
-func cleanAddress(siteList *SiteBlock, HTTPS bool) {
-
+// cleanAddress is a method on SiteBlock responsible for appending HTTP:// onto the site address, or converting them from HTTP:// to HTTPS://
+func (siteList SiteBlock) cleanAddress(HTTPS bool) SiteBlock {
 	for x, site := range siteList.Sites {
 		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
 			if HTTPS {
@@ -83,6 +55,46 @@ func cleanAddress(siteList *SiteBlock, HTTPS bool) {
 		}
 
 		siteList.Sites[x] = site
-
 	}
+
+	return siteList
+}
+
+func (s SiteBlock) Poll() {
+	var wg sync.WaitGroup
+	for x := range siteList.Sites {
+		wg.Add(1)
+		go siteCheck(siteList, x, &wg)
+	}
+	wg.Wait()
+	siteList.LastChecked = time.Now().Format(timeFormat)
+}
+
+// LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.
+func LoadSiteConfig(filePath string, HTTPS bool) (*SiteBlock, error) {
+
+	fileEx, err := os.Stat(filePath)
+	if os.IsNotExist(err) || fileEx.IsDir() == true {
+		return &SiteBlock{}, errors.New("The referenced file cannot be read in its current state")
+	}
+
+	contents, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return &SiteBlock{}, errors.New("Error reading file")
+	}
+
+	watchList := SiteBlock{}
+	err = json.Unmarshal(contents, &watchList)
+	if err != nil {
+		return &SiteBlock{}, errors.New("Error reading json")
+	}
+
+	// If the intreval is not the null value and is less than 5 seconds.
+	if watchList.Intreval < 5 && watchList.Intreval != 0 {
+		watchList.Intreval = 5
+	}
+
+	watchList = watchList.cleanAddress(HTTPS)
+
+	return &watchList, nil
 }

@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	var file = flag.String("f", ".\\sites.json", "A relative path to the JSON configuration file containing the sites to monitor and other settings.")
+	var file = flag.String("f", "./ex.json", "A relative path to the JSON configuration file containing the sites to monitor and other settings.")
 	var HTTPS = flag.Bool("t", false, "Get requests are attempted over HTTPS rather than HTTP")
 
 	flag.Parse()
