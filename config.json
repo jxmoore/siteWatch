@@ -1,0 +1,19 @@
+{
+    "SiteBlock":[
+        {
+        "Name": "googs",
+        "Address":"https://google.com",
+        "Route":"/",
+        "Response":200,
+        "Intreval": 20
+        },
+        {
+        "Name": "bango",
+        "Address":"https://bing.aarons.com",
+        "Route":"/",
+        "Response":200,
+        "Intreval": 35
+        }
+    ]
+
+}

@@ -1,100 +1,73 @@
-// Package models is responsible for the creation and structure of the siteblock type.
 package models
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
-	"sync"
-	"time"
 )
 
-// site is a struct representing the expected nested json objects with the addition of a count, threshold and status
-// these hold the number of failures, the threshold for failures and current up/down status.
-type site struct {
-	Address        string
-	Result         int
-	Status         bool
-	Count          int
-	Threshold      int
-	LastResultCode int
-}
-
-// Notification is the struct that represents the notification json body
-type Notification struct {
-	Kind    string
-	Path    string
-	Webhook string
-}
-
-// SiteBlock is a type containing the top level JSON object which contains an array of sites and the intreval to loop in seconds.
-type SiteBlock struct {
-	Sites        []site
-	Notification Notification
-	Intreval     int
-	LastChecked  string
-	HTTP         bool
-	Port         string
-}
-
-// cleanAddress is a method on SiteBlock responsible for appending HTTP:// onto the site address, or converting them from HTTP:// to HTTPS://
-func (siteList SiteBlock) cleanAddress(HTTPS bool) SiteBlock {
-	for x, site := range siteList.Sites {
-		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
-			if HTTPS {
-				site.Address = "https://" + site.Address
-			} else {
-				site.Address = "http://" + site.Address
-			}
-		} else if HTTPS { // Accounting for hardcoded HTTP in JSON but -t at runtime.
-			if !strings.Contains(strings.ToLower(site.Address), "https://") {
-				site.Address = strings.Replace(site.Address, "http://", "https://", -1)
-			}
-		}
-
-		siteList.Sites[x] = site
+type SiteConfig struct {
+	SiteBlock []struct {
+		Name         string
+		Address      string
+		Route        string
+		Response     int
+		TestEndpoint string
+		Intreval     int
+		Timeout      int
 	}
-
-	return siteList
 }
 
-func (s SiteBlock) Poll() {
-	var wg sync.WaitGroup
-	for x := range siteList.Sites {
-		wg.Add(1)
-		go siteCheck(siteList, x, &wg)
-	}
-	wg.Wait()
-	siteList.LastChecked = time.Now().Format(timeFormat)
-}
-
-// LoadSiteConfig reads the file contents and returns a pointer to a SiteBlock.
-func LoadSiteConfig(filePath string, HTTPS bool) (*SiteBlock, error) {
-
+// LoadSiteConfig reads the file contents and unmarshells it into a pointer of the receiver
+// it is exported as its called in main.
+func (s *SiteConfig) LoadSiteConfig(filePath string) error {
 	fileEx, err := os.Stat(filePath)
 	if os.IsNotExist(err) || fileEx.IsDir() == true {
-		return &SiteBlock{}, errors.New("The referenced file cannot be read in its current state")
+		return fmt.Errorf("The referenced file cannot be read in its current state : %v", err.Error())
 	}
 
 	contents, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return &SiteBlock{}, errors.New("Error reading file")
+		return fmt.Errorf("Error reading file.\n%v", err.Error())
 	}
 
-	watchList := SiteBlock{}
-	err = json.Unmarshal(contents, &watchList)
+	err = json.Unmarshal(contents, s)
 	if err != nil {
-		return &SiteBlock{}, errors.New("Error reading json")
+		return fmt.Errorf("Error reading json\n%v", err.Error())
 	}
 
-	// If the intreval is not the null value and is less than 5 seconds.
-	if watchList.Intreval < 5 && watchList.Intreval != 0 {
-		watchList.Intreval = 5
+	s.cleanAddress()
+
+	return nil
+}
+
+// cleanAddress is a method on SiteConfig responsible for prefixing HTTPs:// onto the site address, forming the testendpoint and naming the test if it is unnamed
+func (s *SiteConfig) cleanAddress() {
+
+	for x, site := range s.SiteBlock {
+
+		if !strings.Contains(strings.ToLower(site.Address), "http://") && !strings.Contains(strings.ToLower(site.Address), "https://") {
+			site.Address = "https://" + site.Address
+		} else if !strings.Contains(strings.ToLower(site.Address), "https://") {
+			site.Address = strings.Replace(site.Address, "http://", "https://", -1)
+		}
+
+		if site.Name == "" {
+			site.Name = site.Address
+		}
+
+		if site.Intreval == 0 {
+			site.Intreval = 5
+		}
+
+		if site.Timeout == 0 {
+			site.Intreval = 10
+		}
+
+		site.TestEndpoint = site.Address + site.Route
+		s.SiteBlock[x] = site
 	}
 
-	watchList = watchList.cleanAddress(HTTPS)
-
-	return &watchList, nil
 }
