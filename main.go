@@ -4,20 +4,25 @@ import (
 	"flag"
 	"log"
 
-	"github.com/jxmoore/siteWatch/controllers"
 	"github.com/jxmoore/siteWatch/models"
+	"github.com/jxmoore/siteWatch/poll"
 )
 
 func main() {
-
-	var file = flag.String("f", "./ex.json", "A relative path to the JSON configuration file containing the sites to monitor and other settings.")
-	var HTTPS = flag.Bool("t", false, "Get requests are attempted over HTTPS rather than HTTP")
+	var confFile = flag.String("p", "./config.json", "The config file for the sites to watch.")
+	var aiKey = flag.String("k", "", "The instrumentation key to use.")
 
 	flag.Parse()
-	watchList, err := models.LoadSiteConfig(*file, *HTTPS)
+
+	siteConfig := models.SiteConfig{}
+	err := siteConfig.LoadSiteConfig(*confFile)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 
-	controllers.StartPoll(watchList)
+	if *aiKey == "" {
+		log.Fatal("Missing required applicationinsights instrumentation key.")
+	}
+	poll.RunSitePoll(&siteConfig, *aiKey)
+
 }
