@@ -10,7 +10,7 @@ import (
 
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 
-	"github.com/jxmoore/AvailTest/models"
+	"github.com/jxmoore/sitewatch/models"
 )
 
 // RunSitePoll is an exported function that starts a go routine for each site in the SiteConfig struct.

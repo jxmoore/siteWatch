@@ -1,4 +1,4 @@
-module github.com/jxmoore/AvailTest
+module github.com/jxmoore/sitewatch
 
 go 1.12
 

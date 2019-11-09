@@ -9,7 +9,7 @@
         },
         {
         "Name": "bango",
-        "Address":"https://bing.aarons.com",
+        "Address":"https://bing.ting.com",
         "Route":"/",
         "Response":200,
         "Intreval": 35
