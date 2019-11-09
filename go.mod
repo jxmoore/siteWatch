@@ -1,8 +1,10 @@
-module github.com/jxmoore/siteWatch
+module github.com/jxmoore/AvailTest
 
 go 1.12
 
 require (
-	github.com/766b/go-outliner v0.0.0-20180511142203-fc6edecdadd7 // indirect
-	golang.org/x/tools/gopls v0.1.7 // indirect
+	code.cloudfoundry.org/clock v0.0.0-20180518195852-02e53af36e6c // indirect
+	github.com/Microsoft/ApplicationInsights-Go v0.4.2 // indirect
+	github.com/microsoft/ApplicationInsights-Go v0.4.2
+	github.com/satori/go.uuid v1.2.0 // indirect
 )
