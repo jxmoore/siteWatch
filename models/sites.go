@@ -1,3 +1,4 @@
+// Package models conatins the structs, the SiteConfig (the configuration) and the Availability struct, along with their defined methods.
 package models
 
 import (
@@ -8,6 +9,7 @@ import (
 	"strings"
 )
 
+// SiteConfig is the struct that represents the JSON that is passed in on runtime. It is used to determine what to probe, how often etc...
 type SiteConfig struct {
 	SiteBlock []struct {
 		Name         string
@@ -43,7 +45,8 @@ func (s *SiteConfig) LoadSiteConfig(filePath string) error {
 	return nil
 }
 
-// cleanAddress is a method on SiteConfig responsible for prefixing HTTPs:// onto the site address, forming the testendpoint and naming the test if it is unnamed
+// cleanAddress is a method on SiteConfig responsible for prefixing HTTPs:// onto the site address and supplying default values to the struct.
+// Could be merged into LoadSite.... and then turned into an init
 func (s *SiteConfig) cleanAddress() {
 
 	for x, site := range s.SiteBlock {
@@ -59,11 +62,11 @@ func (s *SiteConfig) cleanAddress() {
 		}
 
 		if site.Intreval == 0 {
-			site.Intreval = 5
+			site.Intreval = 90
 		}
 
 		if site.Timeout == 0 {
-			site.Intreval = 10
+			site.Timeout = 15
 		}
 
 		site.TestEndpoint = site.Address + site.Route
