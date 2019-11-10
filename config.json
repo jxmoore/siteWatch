@@ -9,10 +9,10 @@
         },
         {
         "Name": "bango",
-        "Address":"https://bing.ting.com",
+        "Address":"https://bing.com",
         "Route":"/",
         "Response":200,
-        "Intreval": 35
+        "Intreval": 15
         }
     ]
 

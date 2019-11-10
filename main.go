@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/jxmoore/sitewatch/models"
-	"github.com/jxmoore/sitewatch/poll"
+	"github.com/jxmoore/siteWatch/models"
+	"github.com/jxmoore/siteWatch/poll"
 )
 
 func main() {

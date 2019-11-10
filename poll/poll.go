@@ -10,7 +10,7 @@ import (
 
 	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 
-	"github.com/jxmoore/sitewatch/models"
+	"github.com/jxmoore/siteWatch/models"
 )
 
 // RunSitePoll is an exported function that starts a go routine for each site in the SiteConfig struct.
@@ -21,11 +21,11 @@ func RunSitePoll(sites *models.SiteConfig, iKey string) error {
 
 	var wg sync.WaitGroup
 	var client = appinsights.NewTelemetryClient(iKey)
+	wg.Add(len(sites.SiteBlock))
 
 	for _, s := range sites.SiteBlock {
-		wg.Add(1)
 		fmt.Printf("Starting go routine for test %v\n", s.Name)
-		go sitePoll(s.Name, s.TestEndpoint, s.Intreval, s.Response, s.Timeout, &wg, client)
+		go sitePoll(s.Name, s.TestEndpoint, s.Intreval, s.Response, s.Timeout, client)
 	}
 
 	wg.Wait()
@@ -33,14 +33,12 @@ func RunSitePoll(sites *models.SiteConfig, iKey string) error {
 }
 
 // sitePoll is the main polling function, it loops indefinitely, probing the specific endpoint ever 'x' seconds. It reuses its own HTTP client
-// that has a timeout defined by the siteconfig block. While the wg.Done() is defered it is never actually signals completion because the loop runs
-// continuously. This is also why the return is nil.
-func sitePoll(name, endpoint string, intreval, responseCode, timeout int, wg *sync.WaitGroup, client appinsights.TelemetryClient) error {
+// that has a timeout defined by the siteconfig block.
+func sitePoll(name, endpoint string, intreval, responseCode, timeout int, client appinsights.TelemetryClient) error {
 
 	testResults := models.Availability{Client: client, Name: name}
 	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	testSite := &http.Client{Timeout: time.Second * time.Duration(timeout), Transport: tr}
-	defer wg.Done()
 
 	for {
 
@@ -67,6 +65,7 @@ func sitePoll(name, endpoint string, intreval, responseCode, timeout int, wg *sy
 
 		_ = testResults.SendAvailibiltyStats()
 		time.Sleep(time.Duration(intreval) * time.Second)
+
 	}
 
 	return nil
